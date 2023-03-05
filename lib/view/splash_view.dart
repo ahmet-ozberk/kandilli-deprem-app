@@ -16,7 +16,10 @@ class _SplashViewState extends ConsumerState<SplashView> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(1500.milliseconds, () {
+    Grock.checkInternet(
+      connectBackgroundColor: Colors.transparent
+    );
+    Future.delayed(800.milliseconds, () {
       Grock.toRemove(const HomeView(), type: NavType.fade);
     });
   }
@@ -30,46 +33,52 @@ class _SplashViewState extends ConsumerState<SplashView> {
           Center(
             child: RotatedBox(
               quarterTurns: 1,
-              child: Image.asset(
-                Assets.images.splashJPG,
-                fit: BoxFit.cover,
-                height: context.width,
-                width: context.height,
+              child: GrockScaleAnimation(
+                duration: const Duration(milliseconds: 600),
+                child: Image.asset(
+                  Assets.images.splashJPG,
+                  fit: BoxFit.cover,
+                  height: context.width,
+                  width: context.height,
+                ),
               ),
             ),
           ),
           SizedBox.expand(
             child: GrockGlassMorphism(
-              blur: 8,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Hero(
-                      tag: 'appBarTitle',
-                      transitionOnUserGestures: true,
-                      child: Text(
-                        'Kandilli Deprem',
-                        style: GoogleFonts.adventPro(
-                          fontSize: 48,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
+              blur: 30,
+              child: GrockScaleAnimation(
+                duration: const Duration(milliseconds: 400),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.fitWidth,
+                      child: Hero(
+                        tag: 'appBarTitle',
+                        transitionOnUserGestures: true,
+                        child: Text(
+                          'Kandilli Deprem',
+                          style: GoogleFonts.adventPro(
+                            fontSize: 48,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                          maxLines: 1,
                         ),
+                      ),
+                    ),
+                    FittedBox(
+                      fit: BoxFit.fitWidth,
+                      child: Text(
+                        'Son Dakika Depremler'.toUpperCase(),
+                        style: Theme.of(context).textTheme.labelMedium,
                         maxLines: 1,
                       ),
                     ),
-                  ),
-                  FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Text(
-                      'Son Dakika Depremler'.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelMedium,
-                      maxLines: 1,
-                    ),
-                  ),
-                ],
-              ).paddingHorizontal(16).paddingOnlyBottom(context.height * 0.33),
+                  ],
+                ).paddingHorizontal(16).paddingOnlyBottom(context.height * 0.33),
+              ),
             ),
           ),
         ],

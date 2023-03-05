@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grock/grock.dart';
 import 'package:kandilli_deprem/controller/home_controller.dart';
-import 'package:kandilli_deprem/utils/enums.dart';
-import 'package:kandilli_deprem/view/filter_view.dart';
-import 'package:kandilli_deprem/widgets/home_select_organisation.dart';
 
-class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
+class HomeAppBar extends ConsumerWidget with PreferredSizeWidget {
   final HomeController controller;
   @override
   final Size preferredSize;
@@ -17,51 +15,48 @@ class HomeAppBar extends StatelessWidget with PreferredSizeWidget {
         super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final read = ref.read(homeController);
+    final watch = ref.watch(homeController);
     return AppBar(
       title: Hero(
         tag: 'appBarTitle',
         transitionOnUserGestures: true,
         child: Text(
-          '${controller.depremType.name} Deprem',
+          'Kandilli Deprem',
           style: GoogleFonts.adventPro(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: Colors.black,
           ),
           maxLines: 1,
-        ),
+        ).material(),
       ),
       actions: [
+        IconButton(onPressed: ()=>read.toggleSearch(), icon: const Icon(CupertinoIcons.search)),
         GrockMenu(
-          items: [
-            GrockMenuItem(
-              text: "Kurum Seç",
-              trailing: const Icon(CupertinoIcons.arrowshape_turn_up_right),
-              onTap: () {
-                Grock.showGrockOverlay(child: const HomeSelectOrganisation());
-              },
+          items: List.generate(
+            10,
+            (index) => GrockMenuItem(
+              body: Text(
+                'Son ${(index + 1) * 50} Deprem',
+                style: GoogleFonts.albertSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+              ),
+              onTap: () => read.setLimit((index + 1) * 50),
+              trailing: Icon(
+                CupertinoIcons.checkmark_seal,
+                color: watch.limit == (index + 1) * 50 ? Colors.green : Colors.transparent,
+              ),
             ),
-            GrockMenuItem(
-              text: "Filtrele",
-              trailing: const Icon(CupertinoIcons.slider_horizontal_3),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  GrockFullScreenModal(
-                    slideTransitionType: SlideTransitionType.fromTop,
-                    builder: (context, animation, secondaryAnimation) => const FilterView(),
-                  ),
-                );
-              },
-            ),
-          ],
-          backgroundColor: Colors.white,
-          pressColor: Colors.grey.shade200,
-          child: const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Icon(CupertinoIcons.settings),
           ),
+          child: Tooltip(message: "Sıralama (Son ${watch.limit} Deprem)",decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: 12.borderRadiusOnlyBottomLeftRight,
+          ),child: const Icon(Icons.filter_alt_outlined).paddingAll(16)),
         ),
       ],
       centerTitle: false,
